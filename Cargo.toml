@@ -1,0 +1,16 @@
+[package]
+name = "meep"
+version = "0.1.0"
+authors = ["James Crooks <crooks1379@gmail.com>"]
+
+[dependencies]
+iron = "*"
+router = "*"
+hyper = "*"
+rand = "*"
+chrono = "*"
+
+serde = "0.9"
+serde_json = "0.9"
+#[macro_use]
+serde_derive = "0.9"
