@@ -25,7 +25,7 @@ fn main() {
     router.get("/api/data", data_response, "data_generator");
     router.post("/api/data", data_redirect, "data_generator_redirect");
 
-    Iron::new(router).http("localhost:7890");
+    Iron::new(router).http("127.0.0.1:8888");
 }
 
 fn data_response(_: &mut Request) -> IronResult<Response> {
