@@ -14,10 +14,12 @@ use iron::status;
 use router::Router;
 use rand::{Rng, thread_rng};
 use chrono::{UTC, Duration};
+use hyper::Client;
 
 use serde::{Serialize, Deserialize};
 
 use std::ops::Add;
+use std::io::Read;
 
 fn main() {
     let mut router = Router::new();
@@ -39,13 +41,20 @@ fn data_response(_: &mut Request) -> IronResult<Response> {
 }
 
 fn data_redirect(req: &mut Request) -> IronResult<Response> {
+    let mut redirect_url = String::new();
+    req.body.read_to_string(&mut redirect_url);
+
     let data = generate_data();
     let data_payload = match serde_json::to_string(&data) {
         Ok(p) => p,
         Err(e) => return Err(IronError::new(e, (status::InternalServerError, "There was a problem.\n"))),
     };
 
-    Ok(Response::with((status::Ok, "Unimplemented...\n")))
+    let client = Client::new();
+    match client.post(&redirect_url).body(&data_payload).send() {
+        Ok(response) => Ok(Response::with((status::Ok, format!("Remote server responded with code: {}", response.status)))),
+        Err(e) => Err(IronError::new(e, (status::BadGateway, "Something went wrong...")))
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
